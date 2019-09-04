@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<body>
+	<meta http-equiv="refresh" content="0.1">
+	{% if x==0 %}
+	<h1 style="color:red;">EYES OPEN</h1>	
+	{% elif x==1 %}
+	<h1 style="color:red;">EYES CLOSED</h1>
+	{% elif x==2 %}
+	<h1 style="color:red;">NOISED</h1>
+	{% endif %}
+	{% if k==1 %}
+	<h1 style="position:absolute;left:60px;bottom:100px;">BLINK</h1>
+	{% endif %}
+		
+<body>
+{% endblock %}

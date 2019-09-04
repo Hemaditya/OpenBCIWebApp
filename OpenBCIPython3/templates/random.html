@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+#square-left {
+  position:fixed;
+  top:50px;
+  left:450px;
+  height: 100px;
+  width: 100px;
+  background-color: red;
+}
+#square-right {
+  position:fixed;
+  top:50px;
+  right:450px;
+  height: 100px;
+  width: 100px;
+  background-color: red;
+}
+#triangle-left {
+	width: 0;
+	height: 0;
+	position:fixed;
+	left:350px;
+	top:0px;
+	border-top: 100px solid transparent;
+	border-right: 100px solid red;
+	border-bottom: 100px solid transparent;
+}
+#triangle-right {
+	width: 0;
+	height: 0;
+	position:fixed;
+	right:350px;
+	top:0px;
+	border-top: 100px solid transparent;
+	border-left: 100px solid red;
+	border-bottom: 100px solid transparent;
+}
+
+#leg-square-left {
+  position:fixed;
+  top:350px;
+  left:450px;
+  height: 100px;
+  width: 100px;
+  background-color: red;
+}
+
+#leg-square-right {
+  position:fixed;
+  top:350px;
+  right:450px;
+  height: 100px;
+  width: 100px;
+  background-color: red;
+}
+
+#leg-triangle-left {
+	width: 0;
+	height: 0;
+	position:fixed;
+	left:350px;
+	top:300px;
+	border-top: 100px solid transparent;
+	border-right: 100px solid red;
+	border-bottom: 100px solid transparent;
+}
+
+#leg-triangle-right {
+	width: 0;
+	height: 0;
+	position:fixed;
+	right:350px;
+	top:300px;
+	border-top: 100px solid transparent;
+	border-left: 100px solid red;
+	border-bottom: 100px solid transparent;
+}
+</style>
+</head>
+<body>
+
+<div id="square-left"></div>
+<div id="square-right"></div>
+<div id="triangle-left"></div>
+<div id="triangle-right"></div>
+<div id="leg-square-left"></div>
+<div id="leg-square-right"></div>
+<div id="leg-triangle-left"></div>
+<div id="leg-triangle-right"></div>
+
+<p id="count"></p>
+
+<form action="/" method="post" id="main">
+	<input type="hidden" name="secret" id="hid" value=""/>
+</form>
+
+
+<script>
+var a1 = document.getElementById("triangle-left")
+var a2 = document.getElementById("square-left")
+var b1 = document.getElementById("triangle-right")
+var b2 = document.getElementById("square-right")
+var c1 = document.getElementById("leg-triangle-left")
+var c2 = document.getElementById("leg-square-left")
+var d1 = document.getElementById("leg-triangle-right")
+var d2 = document.getElementById("leg-square-right")
+var hidd = document.getElementById("hid")
+var info = document.getElementById("count")
+var mainPage = document.getElementById("main")
+var interval = " ";
+var labels = []
+var count = 0;
+var typ = 0 
+var arr = ["la","ra","ll","rl"]
+var limb = "left";
+var trial = 0;
+var secs = 0;
+var n_trials = {{ trials }}
+
+function test() {
+	data = {{ data }}
+	console.log(data)
+}
+test()
+
+startPart()
+function wait(ms)
+{
+var d = new Date();
+var d2 = null;
+do { d2 = new Date(); }
+while(d2-d < ms);
+}
+function startPart() {
+	//interval = setInterval(Countdown,1000);
+	interval = setInterval(showIt,1000);
+}
+
+function Countdown() {
+	info.innerHTML = "Press enter in "+ count
+	count  = count - 1
+
+	if(count == 0) {
+		info.innerHTML = " "
+		count = 3
+		clearInterval(interval)
+	}
+}
+
+function showIt() {
+	if(secs == 0) {
+		info.innerHTML = "Trail "+count
+		count = count + 1
+		typ = arr[Math.floor(Math.random()*4)]
+		labels.push(typ)
+		console.log(labels.join())
+	}
+
+	secs = (secs+1)%6
+	if(secs == 2) {
+		if(typ == "la") {
+			console.log("HER")
+			a1.style.borderRightColor = "yellow"
+			a2.style.backgroundColor = "yellow"
+		}
+
+		if(typ == "ra") {
+			b1.style.borderLeftColor = "yellow"	
+			b2.style.backgroundColor = "yellow"
+		}
+		
+		if(typ == "ll") {
+			c1.style.borderRightColor = "yellow"	
+			c2.style.backgroundColor = "yellow"
+		}
+
+		if(typ == "rl") {
+			d1.style.borderLeftColor = "yellow"	
+			d2.style.backgroundColor = "yellow"
+		}
+	}
+
+
+	if (secs >=3) {
+		if(typ == "la") {
+			a1.style.borderRightColor = "green"
+			a2.style.backgroundColor = "green"
+		}
+
+		if(typ == "ra") {
+			b1.style.borderLeftColor = "green"	
+			b2.style.backgroundColor = "green"
+		}
+		
+		if(typ == "ll") {
+			c1.style.borderRightColor = "green"	
+			c2.style.backgroundColor = "green"
+		}
+
+		if(typ == "rl") {
+			d1.style.borderLeftColor = "green"	
+			d2.style.backgroundColor = "green"
+		}
+	}
+
+
+	if (secs == 0) {
+		if(typ == "la") {
+			a1.style.borderRightColor = "red"
+			a2.style.backgroundColor = "red"
+		}
+
+		if(typ == "ra") {
+			b1.style.borderLeftColor = "red"	
+			b2.style.backgroundColor = "red"
+		}
+		
+		if(typ == "ll") {
+			c1.style.borderRightColor = "red"	
+			c2.style.backgroundColor = "red"
+		}
+
+		if(typ == "rl") {
+			d1.style.borderLeftColor = "red"	
+			d2.style.backgroundColor = "red"
+		}
+		
+		if(count == n_trials) {
+			hid.value = labels.join()
+			clearInterval(interval)
+			mainPage.submit()
+		}
+
+	}
+}
+
+</script>
+
+</body>
+</html> 
+
