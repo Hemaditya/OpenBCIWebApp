@@ -19,9 +19,13 @@ from sklearn.preprocessing import normalize
 chunk_size = 250
 homeDir = './SessionData'
 
-def retrieveFiles():
-	x = input("Enter the user data you wanna collect: ")
-	x = x.lower()
+def retrieveFiles(name=None):
+	x = ""
+	if(name == None):
+		x = input("Enter the user data you wanna collect: ")
+		x = x.lower()
+	else:
+		x = name
 	return getFiles(x)
 
 def getFiles(user):
@@ -103,6 +107,11 @@ def buildEpochs(mneObject, labels, policy=0):
 		n_epochs = description.shape[0]
 		onset = np.arange(n_epochs)
 	if(policy == 1):
+		description = [[0,0,int(i)+1,int(i)+1,int(i)+1,int(i)+1] for i in labels]
+		description = np.asarray(description).reshape(-1)
+		n_epochs = description.shape[0]
+		onset = np.arange(n_epochs)
+	if(policy == 2):
 		description = [[int(i)+1,int(i)+1,int(i)+1] for i in labels]	
 		description = np.asarray(description).reshape(-1)
 		n_epochs = description.shape[0]
@@ -235,10 +244,10 @@ def findAverage(mneEpochs):
 		ax[1].plot(i)
 	plt.show()
 
-def bandpass(arr,state):
+def bandpass(arr,state,bp):
 		# This is to allow the band of signal to pass with start frequency and stop frequency
-		start = 5
-		stop = 50
+		start = bp[0]
+		stop = bp[1]
 		bp_Hz = np.zeros(0)
 		bp_Hz = np.array([start,stop])
 		b, a = signal.butter(3, bp_Hz/(250 / 2.0),'bandpass')
@@ -254,7 +263,7 @@ def notchFilter(arr,state):
 		notchOutput, state = signal.lfilter(b, a, arr, zi=state)
 		return notchOutput, state
 
-def applyFilters(data):
+def applyFilters(data,bp=None):
 	'''	
 		Input - The data will be in the shape of (n_chunks, channels,chunk_size)
 		Output - (n_chunks, channels, chunk_size)
@@ -274,13 +283,15 @@ def applyFilters(data):
 	for c in range(data.shape[0]):
 		# Create an empty numpy array and keep stacking it
 		notchOut = np.zeros(shape=(1,data.shape[-1]))
-		print(c)
+		print("Applying filter for channel: ",c)
 		for sample in data[c]:
 			dcOutput, Zstate['dc_offset'][c] = removeDCOffset(sample,Zstate['dc_offset'][c])
 			notchOutput, Zstate['notch'][c]  = notchFilter(dcOutput,Zstate['notch'][c])
-			bandpassOutput, Zstate['bandpass'][c] = bandpass(notchOutput,Zstate['bandpass'][c])
-			notchOut = np.vstack((notchOut,bandpassOutput.reshape(1,-1)))
-			#notchOut = np.vstack((notchOut,notchOutput.reshape(1,-1)))
+			if(bp != None):
+				bandpassOutput, Zstate['bandpass'][c] = bandpass(notchOutput,Zstate['bandpass'][c],bp)
+				notchOut = np.vstack((notchOut,bandpassOutput.reshape(1,-1)))
+			else:
+				notchOut = np.vstack((notchOut,notchOutput.reshape(1,-1)))
 		
 		notchOut = notchOut[1:]
 		finalData = np.vstack((finalData,np.expand_dims(notchOut,0)))

@@ -18,7 +18,7 @@ def savefig(data,path=None):
 		print(i,"/",data.shape[0])
 		for c in range(8):
 			ax[c].cla()
-			ax[c].imshow(s[c])
+			ax[c].imshow(s[c],cmap='hot')
 		fig.savefig(path+"/data_"+str(i))
 	
 	plt.show()
